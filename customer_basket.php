@@ -48,16 +48,18 @@
             background-color: #f2f2f2;
         }
 
-        .delete-from-basket, .add-to-basket, .btn-back, .clear-basket {
-            padding: 10px 16px;
+        .delete-from-basket, .add-to-basket {
+            padding: 8px 12px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            margin-right: 10px;
+            margin-right: 5px;
             text-decoration: none;
             display: inline-block;
             font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .delete-from-basket {
@@ -70,15 +72,6 @@
             color: white;
         }
 
-        .clear-basket, .btn-back {
-            background-color: #333;
-            color: white;
-        }
-
-        .clear-basket:hover, .btn-back:hover {
-            background-color: #555;
-        }
-
         .total-price {
             text-align: right;
             margin-bottom: 20px;
@@ -86,12 +79,24 @@
             font-size: 18px;
         }
 
-        .notification {
-            background-color: #e8f5e9;
-            border-left: 5px solid #4caf50;
-            padding: 10px;
-            margin-bottom: 20px;
-            color: #4caf50;
+        .btn-back {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-right: 5px;
+        }
+
+        .btn-back:hover {
+            background-color: #555;
         }
     </style>
 </head>
@@ -99,60 +104,57 @@
     <div class="container">
         <h2>Your Basket</h2>
 
-        <div class="notification">
-            <p>Product deleted from the basket successfully and stock level updated</p>
-        </div>
+        <?php
+        // Your PHP code to fetch data from the database
+        $servername = "localhost";
+        $username = "2010604";
+        $password = "Choudhury1212";
+        $dbname = "db2010604";
 
-        <table>
-            <tr>
-                <th>Product ID</th>
-                <th>Brand</th>
-                <th>Model</th>
-                <th>Stock</th>
-                <th>Price</th>
-                <th>Action</th>
-            </tr>
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
 
-            <?php
-            // Your PHP code to fetch data from the database
-            $servername = "localhost";
-            $username = "2010604";
-            $password = "Choudhury1212";
-            $dbname = "db2010604";
+        $sql = "SELECT * FROM `Phones 4 Sale`";
+        $result = $conn->query($sql);
 
-            $conn = new mysqli($servername, $username, $password, $dbname);
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
+        if ($result->num_rows > 0) {
+            echo '<table>';
+            echo '<tr>';
+            echo '<th>Product ID</th>';
+            echo '<th>Brand</th>';
+            echo '<th>Model</th>';
+            echo '<th>Stock</th>';
+            echo '<th>Price</th>';
+            echo '<th>Action</th>';
+            echo '</tr>';
+
+            while ($row = $result->fetch_assoc()) {
+                echo '<tr>';
+                echo '<td>' . $row["Product_ID"] . '</td>';
+                echo '<td>' . $row["Brand"] . '</td>';
+                echo '<td>' . $row["Model"] . '</td>';
+                echo '<td class="stock" data-id="' . $row["Product_ID"] . '">' . $row["Stock"] . '</td>';
+                echo '<td>$' . $row["Price"] . '</td>';
+                echo '<td>';
+                echo '<button class="delete-from-basket" onclick="updateTotal(-' . $row["Price"] . ',' . $row["Product_ID"] . ')">Delete</button>';
+                echo '<button class="add-to-basket" onclick="updateTotal(' . $row["Price"] . ',' . $row["Product_ID"] . ')">Add to Basket</button>';
+                echo '</td>';
+                echo '</tr>';
             }
 
-            $sql = "SELECT * FROM `Phones 4 Sale`";
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                while($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . $row["Product_ID"] . "</td>";
-                    echo "<td>" . $row["Brand"] . "</td>";
-                    echo "<td>" . $row["Model"] . "</td>";
-                    echo "<td class='stock'>" . $row["Stock"] . "</td>";
-                    echo "<td>$" . $row["Price"] . "</td>";
-                    echo "<td>";
-                    echo "<button class='delete-from-basket' onclick='updateTotal(-" . $row["Price"] . "," . $row["Product_ID"] . ")'>Delete</button>";
-                    echo "<button class='add-to-basket' onclick='updateTotal(" . $row["Price"] . "," . $row["Product_ID"] . ")'>Add to Basket</button>";
-                    echo "</td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "0 results";
-            }
-            $conn->close();
-            ?>
-        </table>
+            echo '</table>';
+        } else {
+            echo '0 results';
+        }
+        $conn->close();
+        ?>
 
         <p class="total-price">Total Price: <span id="totalPrice">$0</span></p>
 
         <button class="clear-basket" onclick="clearBasket()">Clear Basket</button>
-	<a href="home.php" class="btn-back">Back to Shop</a>
+        <a href="home.php" class="btn-back">Back to Shop</a>
     </div>
 
     <script>
@@ -160,11 +162,18 @@
         const totalPriceSpan = document.getElementById('totalPrice');
 
         function updateTotal(price, productId) {
-            totalPrice += price;
-            totalPriceSpan.textContent = `$${totalPrice}`;
             const stockElement = document.querySelector(`.stock[data-id='${productId}']`);
-            const currentStock = parseInt(stockElement.textContent);
-            stockElement.textContent = currentStock + (price > 0 ? -1 : 1);
+            let currentStock = parseInt(stockElement.textContent);
+
+            if (currentStock > 0 || (price < 0 && currentStock < 0)) {
+                totalPrice += price;
+                totalPriceSpan.textContent = `$${totalPrice}`;
+
+                if (currentStock > 0) {
+                    currentStock += (price > 0) ? -1 : 1;
+                    stockElement.textContent = currentStock;
+                }
+            }
         }
 
         function clearBasket() {
@@ -175,6 +184,21 @@
             totalPrice = 0;
             totalPriceSpan.textContent = `$${totalPrice}`;
         }
+    <script>
+        // Check if there's any saved total price in localStorage
+        let totalPrice = localStorage.getItem('basketTotal') ? parseFloat(localStorage.getItem('basketTotal')) : 0;
+        const totalPriceSpan = document.getElementById('totalPrice');
+
+        // Update the total price display
+        totalPriceSpan.textContent = `$${totalPrice}`;
+
+       function updateTotal(price) {
+            // Update the total price
+            totalPrice += price;
+            totalPriceSpan.textContent = `$${totalPrice}`;
+
+            // Save the updated total price in localStorage
+            localStorage.setItem('basketTotal', totalPrice.toString());
     </script>
 </body>
 </html>

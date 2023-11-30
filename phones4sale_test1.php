@@ -15,25 +15,33 @@
         h2 {
             text-align: center;
             font-size: 36px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             color: #4caf50;
             text-transform: uppercase;
             letter-spacing: 2px;
             border-bottom: 2px solid #4caf50;
             display: inline-block;
-            padding-bottom: 5px;
+            padding-bottom: 10px;
+            animation: fadeIn 1s ease-in-out;
         }
         /* Other styles remain the same */
         table {
-            font-size: 22px;
-            width: 80%;
+            font-size: 20px;
+            width: 90%;
             margin: 0 auto;
+            animation: slideIn 1s ease-in-out;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-        th, td {
-            text-align: center;
-            padding: 10px;
+        table th, table td {
+            padding: 12px;
+            border: 1px solid #ddd;
         }
-        td.image-cell {
+        table th {
+            background-color: #4caf50;
+            color: white;
+        }
+        table td.image-cell {
             width: 150px;
             height: 150px;
         }
@@ -42,20 +50,8 @@
             height: 100%;
             object-fit: cover;
         }
-        .accounts-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .signup-btn {
-            display: block;
+        .accounts-btn, .signup-btn {
+            display: inline-block;
             margin-top: 20px;
             text-align: center;
             background-color: #4caf50;
@@ -65,6 +61,10 @@
             font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
+            text-decoration: none;
+        }
+        .signup-btn {
+            margin-left: 10px;
         }
         button.add-to-basket {
             padding: 8px 16px;
@@ -77,6 +77,15 @@
         }
         button.add-to-basket:hover {
             background-color: #45a049;
+        }
+        /* Keyframe animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-100px); }
+            to { transform: translateY(0); }
         }
     </style>
 </head>

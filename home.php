@@ -151,7 +151,9 @@
             <h3>Samsung Galaxy Z Flip 4</h3>
             <p>The Galaxy Z Flip 4 has two screens: its foldable inner 6.7-inch display with a 120 Hz variable refresh rate and its 1.9-inch cover display. The device has 8 GB of RAM, and either 128 GB, 256 GB or 512 GB of UFS 3.1 flash storage, with no support for expanding the device's storage capacity via micro-SD cards</p>
             <a href="phones4sale_test1.php" class="btn">View Details</a>
+			<a href='customer_basket.php' class='basket-button'><button>Basket</button></a>
         </div>
+		
 
         <!-- Add more product cards as needed -->
     </section>
